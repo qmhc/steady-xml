@@ -1,0 +1,69 @@
+{
+  "author": {
+    "name": "qmhc"
+  },
+  "devDependencies": {
+    "@commitlint/cli": "^13.1.0",
+    "@commitlint/config-conventional": "^13.1.0",
+    "@types/adm-zip": "^0.4.34",
+    "@types/fs-extra": "^9.0.12",
+    "@types/jest": "^27.0.1",
+    "@types/node": "^16.9.1",
+    "@typescript-eslint/eslint-plugin": "^4.29.2",
+    "@typescript-eslint/parser": "^4.29.2",
+    "chalk": "^4.1.2",
+    "commitizen": "^4.2.4",
+    "conventional-changelog-cli": "^2.1.1",
+    "cz-customizable": "^6.3.0",
+    "enquirer": "^2.3.6",
+    "eslint": "^7.32.0",
+    "execa": "^5.1.1",
+    "husky": "^7.0.1",
+    "is-ci": "^3.0.0",
+    "jest": "^27.0.6",
+    "lint-staged": "^11.1.2",
+    "minimist": "^1.2.5",
+    "pinst": "^2.1.6",
+    "prettier": "^2.3.2",
+    "pretty-quick": "^3.1.1",
+    "rimraf": "^3.0.2",
+    "semver": "^7.3.5",
+    "ts-jest": "^27.0.5",
+    "ts-node": "^10.2.1",
+    "tsup": "^4.14.0",
+    "typescript": "4.3.5"
+  },
+  "engines": {
+    "node": ">=12.0.0"
+  },
+  "files": [
+    "dist"
+  ],
+  "keywords": [
+    "steady-xml",
+    "steady",
+    "xml",
+    "html",
+    "parse",
+    "json"
+  ],
+  "license": "MIT",
+  "main": "dist/index.js",
+  "module": "dist/index.mjs",
+  "name": "steady-xml",
+  "scripts": {
+    "build": "tsup src/index.ts --dts --format cjs,esm",
+    "changelog": "conventional-changelog -p angular -i CHANGELOG.md -s --commit-path .",
+    "dev": "yarn run build -- --watch",
+    "lint": "eslint --fix --ext .js,.ts src/**",
+    "postinstall": "is-ci || husky install",
+    "postpublish": "pinst --enable",
+    "precommit": "lint-staged -c ./.husky/.lintstagedrc",
+    "prepublishOnly": "pinst --disable",
+    "prettier": "pretty-quick --staged --pattern \"**/*.md\"",
+    "release": "node scripts/release.js",
+    "test": "jest --runInBand"
+  },
+  "types": "dist/index.d.ts",
+  "version": "0.1.0"
+}

@@ -1,0 +1,8 @@
+dist/
+types/
+node_modules/
+scripts/
+.husky/
+.yarn/
+
+**/*.sh
