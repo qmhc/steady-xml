@@ -28,11 +28,11 @@ export function buildFromJson<T extends Record<string, any>>(
   } else {
     const declarationNdoe = new XmlNode(XmlNodeType.Declaration, rootXmlNode)
 
-    declarationNdoe.attributes = {
+    declarationNdoe.setAttributes({
       version: 1,
       encoding: 'UTF-8',
       standalone: 'yes'
-    }
+    })
 
     rootXmlNode.addChild(declarationNdoe)
     loopQueue.push({ parent: rootXmlNode, child: json })
@@ -95,20 +95,19 @@ export function buildFromJson<T extends Record<string, any>>(
 
         if (attributes && isObject(attributes)) {
           Object.keys(attributes).forEach(key => {
-            node.attributes[key] = normalizedProps.attributeProcessor(
-              attributes[key],
+            node.setAttribute(
               key,
-              XmlNodeType.Declaration
+              normalizedProps.attributeProcessor(attributes[key], key, XmlNodeType.Declaration)
             )
           })
         }
 
-        if (!node.attributes.version) {
-          node.attributes.version = 1
+        if (!node.getAttribute('version')) {
+          node.setAttribute('version', 1)
         } else {
-          const version = parseFloat(node.attributes.version as any)
+          const version = parseFloat(node.getAttribute('version') as any)
 
-          node.attributes.version = Number.isNaN(version) ? 1 : version
+          node.setAttribute('version', Number.isNaN(version) ? 1 : version)
         }
 
         parent.addChild(node)
@@ -145,15 +144,13 @@ export function buildFromJson<T extends Record<string, any>>(
         const node = new XmlNode(XmlNodeType.Element, parent)
         const attributes = attributesKey && child[attributesKey]
 
-        node.name = tagName
-        node.prefix = prefix
+        node.setName(tagName).setPrefix(prefix)
 
         if (attributes && isObject(attributes)) {
           Object.keys(attributes).forEach(key => {
-            node.attributes[key] = normalizedProps.attributeProcessor(
-              attributes[key],
+            node.setAttribute(
               key,
-              XmlNodeType.Element
+              normalizedProps.attributeProcessor(attributes[key], key, XmlNodeType.Element)
             )
           })
         }
@@ -163,11 +160,11 @@ export function buildFromJson<T extends Record<string, any>>(
         const children = child[childrenKey]
 
         if (isArray(children) && children.length) {
-          node.selfClosing = false
+          node.setSelfClosing(false)
 
           loopQueue.push(...children.map(child => ({ parent: node, child })))
         } else {
-          node.selfClosing = Boolean(selfClosingKey && child[selfClosingKey])
+          node.setSelfClosing(Boolean(selfClosingKey && child[selfClosingKey]))
         }
       }
     }

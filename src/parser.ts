@@ -37,7 +37,7 @@ export function parseXmlString(xmlString: string, props: Partial<ParseProps> = {
           }
         }
 
-        if (currentNode.prefix !== prefix || currentNode.name !== tagName) {
+        if (currentNode.getPrefix() !== prefix || currentNode.getName() !== tagName) {
           throw new Error(`End Tag is incorrect.`)
         }
 
@@ -51,7 +51,7 @@ export function parseXmlString(xmlString: string, props: Partial<ParseProps> = {
           }
         }
 
-        currentNode = currentNode.parent!
+        currentNode = currentNode.getParent()!
         textData = ''
         i = endIndex
       } else if (normalizedXml[i + 1] === '?') {
@@ -67,14 +67,16 @@ export function parseXmlString(xmlString: string, props: Partial<ParseProps> = {
           if (
             content.startsWith('xml ') &&
             content.includes('version=') &&
-            currentNode.type === XmlNodeType.Root
+            currentNode.getType() === XmlNodeType.Root
           ) {
             const childNode = new XmlNode(XmlNodeType.Declaration, currentNode)
 
-            childNode.attributes = parseAttributes(
-              content.substr(4),
-              XmlNodeType.Declaration,
-              normalizedProps
+            childNode.setAttributes(
+              parseAttributes(
+                content.substr(4),
+                XmlNodeType.Declaration,
+                normalizedProps
+              )
             )
 
             currentNode.addChild(childNode)
@@ -213,6 +215,7 @@ export function parseXmlString(xmlString: string, props: Partial<ParseProps> = {
           }
         }
 
+        // self closing tag
         if (content.length && content.lastIndexOf('/') === content.length - 1) {
           if (tagName[tagName.length - 1] === '/') {
             tagName = tagName.substr(0, tagName.length - 1)
@@ -223,24 +226,25 @@ export function parseXmlString(xmlString: string, props: Partial<ParseProps> = {
 
           const childNode = new XmlNode(XmlNodeType.Element, currentNode)
 
-          childNode.name = tagName
-          childNode.selfClosing = true
-          childNode.prefix = prefix
+          childNode.setName(tagName).setPrefix(prefix).setSelfClosing(true)
 
           if (content && !normalizedProps.ignoreAttributes) {
-            childNode.attributes = parseAttributes(content, XmlNodeType.Element, normalizedProps)
+            childNode.setAttributes(
+              parseAttributes(content, XmlNodeType.Element, normalizedProps)
+            )
           }
 
           currentNode.addChild(childNode)
         } else {
           const childNode = new XmlNode(XmlNodeType.Element, currentNode)
 
-          if (content && !normalizedProps.ignoreAttributes) {
-            childNode.attributes = parseAttributes(content, XmlNodeType.Element, normalizedProps)
-          }
+          childNode.setName(tagName).setPrefix(prefix)
 
-          childNode.name = tagName
-          childNode.prefix = prefix
+          if (content && !normalizedProps.ignoreAttributes) {
+            childNode.setAttributes(
+              parseAttributes(content, XmlNodeType.Element, normalizedProps)
+            )
+          }
 
           currentNode.addChild(childNode)
           currentNode = childNode

@@ -24,14 +24,14 @@ export interface XmlJsObject {
 }
 
 export class XmlNode {
-  name: string
-  type: XmlNodeType
-  parent: XmlNode | null
-  children: XmlNode[] | null
-  attributes: Record<string, unknown>
-  value: any
-  selfClosing: boolean
-  prefix: string
+  protected name: string
+  protected type: XmlNodeType
+  protected parent: XmlNode | null
+  protected children: XmlNode[] | null
+  protected attributes: Record<string, unknown>
+  protected value: any
+  protected selfClosing: boolean
+  protected prefix: string
 
   constructor(type: XmlNodeType, parent: XmlNode | null = null, value: any = null) {
     this.name = ''
@@ -44,9 +44,17 @@ export class XmlNode {
     this.prefix = ''
   }
 
+  getName() {
+    return this.name
+  }
+
   setName(value: string) {
     this.name = value
     return this
+  }
+
+  getType() {
+    return this.type
   }
 
   setType(value: XmlNodeType) {
@@ -54,9 +62,17 @@ export class XmlNode {
     return this
   }
 
+  getParent() {
+    return this.parent
+  }
+
   setParent(value: XmlNode | null) {
     this.parent = value
     return this
+  }
+
+  getChildren() {
+    return this.children
   }
 
   setChildren(value: XmlNode[] | null) {
@@ -64,9 +80,17 @@ export class XmlNode {
     return this
   }
 
+  getAttributes() {
+    return this.attributes
+  }
+
   setAttributes(value: Record<string, unknown>) {
     this.attributes = { ...value }
     return this
+  }
+
+  getValue() {
+    return this.value
   }
 
   setValue(value: any) {
@@ -74,9 +98,17 @@ export class XmlNode {
     return this
   }
 
+  getSelfClosing() {
+    return this.selfClosing
+  }
+
   setSelfClosing(value: boolean) {
     this.selfClosing = value
     return this
+  }
+
+  getPrefix() {
+    return this.prefix
   }
 
   setPrefix(value: string) {
@@ -84,13 +116,17 @@ export class XmlNode {
     return this
   }
 
-  addAttribute(name: string, value: unknown) {
-    this.attributes[name] = value
-    return this
+  getAttribute(name: string) {
+    return this.attributes[name]
   }
 
-  removeAttribute(name: string) {
-    delete this.attributes[name]
+  setAttribute(name: string, value: unknown) {
+    if (isNull(value)) {
+      delete this.attributes[name]
+    } else {
+      this.attributes[name] = value
+    }
+
     return this
   }
 
@@ -124,93 +160,104 @@ export class XmlNode {
   }
 
   toJsObject(): XmlJsObject {
+    const type = this.getType()
+    const attributes = this.getAttributes()
+    const value = this.getValue()
+    const children = this.getChildren()
+
     return {
-      name: this.name || undefined,
-      prefix: this.prefix || undefined,
-      type: this.type,
-      attributes: Object.keys(this.attributes).length ? this.attributes : undefined,
-      value: isNull(this.value) ? undefined : this.value,
-      selfClosing: this.selfClosing || undefined,
+      type,
+      name: this.getName() || undefined,
+      prefix: this.getPrefix() || undefined,
+      attributes: Object.keys(attributes).length ? attributes : undefined,
+      value: isNull(value) ? undefined : value,
+      selfClosing: this.getSelfClosing() || undefined,
       children:
-        (this.type === XmlNodeType.Element || this.type === XmlNodeType.Root) &&
-        this.children &&
-        this.children.length
-          ? this.children.map(child => child.toJSON())
+        (type === XmlNodeType.Element || type === XmlNodeType.Root) &&
+        children &&
+        children.length
+          ? children.map(child => child.toJSON())
           : undefined
     }
   }
 
   toXmlString(indentChar = '  ', newLine = '\n', indentCount = 0) {
     const indent = indentChar.repeat(indentCount)
+    const attributes = this.getAttributes()
+    const name = this.getName()
+    const prefix = this.getPrefix()
+    const value = this.getValue()
+    const selfClosing = this.getSelfClosing()
+    const children = this.getChildren()
 
     let xml = ''
 
-    switch (this.type) {
+    switch (this.getType()) {
       case XmlNodeType.Root: {
         xml +=
-          this.children && this.children.length
-            ? this.children
+          children && children.length
+            ? children
                 .map(node => node.toXmlString(indentChar, newLine, indentCount))
                 .join(newLine)
             : ''
         break
       }
       case XmlNodeType.Element: {
-        if (!this.name) return ''
+        if (!name) return ''
 
-        const name = this.prefix ? `${this.prefix}:${this.name}` : this.name
+        const fullName = prefix ? `${prefix}:${name}` : name
 
-        xml += `${indent}<${name}`
+        xml += `${indent}<${fullName}`
 
-        const attributes = buildAttributeString(this.attributes || {})
+        const attributeString = buildAttributeString(attributes || {})
 
-        if (attributes) {
-          xml += ` ${attributes}`
+        if (attributeString) {
+          xml += ` ${attributeString}`
         }
 
-        if (this.children && this.children.length) {
-          xml += `>${newLine}${this.children
+        if (children && children.length) {
+          xml += `>${newLine}${children
             .map(node => node.toXmlString(indentChar, newLine, indentCount + 1))
-            .join(newLine)}${newLine}${indent}</${name}>`
+            .join(newLine)}${newLine}${indent}</${fullName}>`
         } else {
-          xml += this.selfClosing ? ' />' : `></${name}>`
+          xml += selfClosing ? ' />' : `></${fullName}>`
         }
 
         break
       }
       case XmlNodeType.CDATA: {
-        xml += `${indent}<![CDATA[${isNull(this.value) ? '' : this.value}]]>`
+        xml += `${indent}<![CDATA[${isNull(value) ? '' : value}]]>`
         break
       }
       case XmlNodeType.Text: {
-        xml += isNull(this.value) ? '' : `${indent}${this.value}`
+        xml += isNull(value) ? '' : `${indent}${value}`
         break
       }
       case XmlNodeType.DocumentType: {
-        xml += isNull(this.value) ? '' : `${indent}<!DOCTYPE ${this.value}>`
+        xml += isNull(value) ? '' : `${indent}<!DOCTYPE ${value}>`
         break
       }
       case XmlNodeType.Comment: {
-        xml += `${indent}<!-- ${isNull(this.value) ? '' : this.value + ' '}-->`
+        xml += `${indent}<!-- ${isNull(value) ? '' : value + ' '}-->`
         break
       }
       case XmlNodeType.Declaration: {
         xml += `${indent}<?xml `
 
-        if (!this.attributes || isNull(this.attributes.version)) {
+        if (!attributes || isNull(attributes.version)) {
           xml += 'version="1.0" '
         } else {
-          const version = parseFloat(this.attributes.version as any)
+          const version = parseFloat(attributes.version as any)
 
           xml += `version="${Number.isNaN(version) ? '1.0' : version.toFixed(1)}" `
         }
 
-        if (this.attributes) {
+        if (attributes) {
           // eslint-disable-next-line @typescript-eslint/no-unused-vars
-          const { version, ...attributes } = this.attributes
+          const { version, ...others } = attributes
 
-          if (attributes) {
-            xml += buildAttributeString(attributes)
+          if (Object.keys(others).length) {
+            xml += buildAttributeString(others)
           }
         }
 
@@ -218,7 +265,7 @@ export class XmlNode {
         break
       }
       case XmlNodeType.Instruction: {
-        xml += isNull(this.value) ? '' : `${indent}<?${this.value}?>`
+        xml += isNull(value) ? '' : `${indent}<?${value}?>`
         break
       }
     }

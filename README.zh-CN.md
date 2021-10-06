@@ -196,61 +196,78 @@ interface XmlJsObject {
 
 class XmlNode {
   // 节点的名称
-  name: string
+  protected name: string
 
   // 节点的类型
-  type: XmlNodeType
+  protected type: XmlNodeType
 
   // 父节点
-  parent: XmlNode | null
+  protected parent: XmlNode | null
 
   // 子节点
-  children: XmlNode[] | null
+  protected children: XmlNode[] | null
 
   // 节点的属性
-  attributes: Record<string, unknown>
+  protected attributes: Record<string, unknown>
 
   // 节点值
-  value: any
+  protected value: any
 
   // 是否自关闭
-  selfClosing: boolean
+  protected selfClosing: boolean
 
   // 节点前缀
-  prefix: string
+  protected prefix: string
 
   // 构造方法
-  constructor(name: string, type: XmlNodeType, parent?: XmlNode | null, value?: any);
+  constructor(name: string, type: XmlNodeType, parent?: XmlNode | null, value?: any)
+
+  getName(): string
 
   // 链式设置名称
   setName(value: string): this
 
+  getType(): XmlNodeType
+
   // 链式设置类型
   setType(value: XmlNodeType): this
+
+  getParent(): XmlNode | null
 
   // 链式设置父节点
   setParent(value: XmlNode | null): this
 
+  getChildren(): XmlNode[] | null
+
   // 链式设置子节点
   setChildren(value: XmlNode[] | null): this
+
+  getAttributes(): Record<string, unknown>
 
   // 链式设置属性
   setAttributes(value: Record<string, unknown>): this
 
+  getValue(): any
+
   // 链式设置值
   setValue(value: any): this
+
+  getSelfClosing(): boolean
 
   // 链式设置是否自关闭
   setSelfClosing(value: boolean): this
 
+  getPrefix(): string
+
   // 链式设置前缀
   setPrefix(value: string): this
 
-  // 链式添加属性
-  addAttribute(name: string, value: unknown): this
+  // 根据属性名获取属性值
+  getAttribute(name: string): unknown
 
-  // 链式移除属性
-  removeAttribute(name: string): this
+  // 链式设置属性
+  // 当 value 为 null 或 undefined 时属性会被删除
+  setAttributes(value: Record<string, unknown>): this
 
   // 链式添加子节点
   addChild(childNode: XmlNode): void

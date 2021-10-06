@@ -6,28 +6,28 @@ describe('node tests', () => {
   it('can construct', () => {
     const node = new XmlNode(XmlNodeType.Element).setName('test-node')
 
-    expect(node.name).toBe('test-node')
-    expect(node.type).toBe(XmlNodeType.Element)
+    expect(node.getName()).toBe('test-node')
+    expect(node.getType()).toBe(XmlNodeType.Element)
   })
 
   it('has parent', () => {
     const parent = new XmlNode(XmlNodeType.Root)
     const node = new XmlNode(XmlNodeType.Element, parent).setName('test-node')
 
-    expect(node.parent).toBe(parent)
+    expect(node.getParent()).toBe(parent)
   })
 
   it('has value', () => {
     const node = new XmlNode(XmlNodeType.Element, null, 'test-value').setName('test-node')
 
-    expect(node.value).toBe('test-value')
+    expect(node.getValue()).toBe('test-value')
   })
 
   it('toJsObject method', () => {
     const root = new XmlNode(XmlNodeType.Root)
     const node = new XmlNode(XmlNodeType.Element, root).setName('test-node')
 
-    node.attributes = { name: 'element', active: true }
+    node.setAttributes({ name: 'element', active: true })
 
     root.addChild(new XmlNode(XmlNodeType.Comment, root, 'A Comment'))
     root.addChild(node)
@@ -66,7 +66,7 @@ describe('node tests', () => {
     const root = new XmlNode(XmlNodeType.Root)
     const node = new XmlNode(XmlNodeType.Element, root).setName('test-node')
 
-    node.attributes = { name: 'element', active: true }
+    node.setAttributes({ name: 'element', active: true })
 
     root.addChild(new XmlNode(XmlNodeType.Comment, root, 'A Comment')).addChild(node)
 

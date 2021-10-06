@@ -196,60 +196,77 @@ interface XmlJsObject {
 
 declare class XmlNode {
   // node name
-  name: string
+  protected name: string
 
   // node type
-  type: XmlNodeType
+  protected type: XmlNodeType
 
   // parend node
-  parent: XmlNode | null
+  protected parent: XmlNode | null
 
   // chidl node list
-  children: XmlNode[] | null
+  protected children: XmlNode[] | null
 
   // attribute map
-  attributes: Record<string, unknown>
+  protected attributes: Record<string, unknown>
 
   // node value
-  value: any
+  protected value: any
 
   // is self closing
-  selfClosing: boolean
+  protected selfClosing: boolean
 
   // node prefix
-  prefix: string
+  protected prefix: string
 
   constructor(name: string, type: XmlNodeType, parent?: XmlNode | null, value?: any)
+
+  getName(): string
 
   // chain set name
   setName(value: string): this
 
+  getType(): XmlNodeType
+
   // chain set type
   setType(value: XmlNodeType): this
+
+  getParent(): XmlNode | null
 
   // chain set parent node
   setParent(value: XmlNode | null): this
 
+  getChildren(): XmlNode[] | null
+
   // chain set children list
   setChildren(value: XmlNode[] | null): this
+
+  getAttributes(): Record<string, unknown>
 
   // chain set attribute map
   setAttributes(value: Record<string, unknown>): this
 
+  getValue(): any
+
   // chain set value
   setValue(value: any): this
+
+  getSelfClosing(): boolean
 
   // chain set self closing
   setSelfClosing(value: boolean): this
 
+  getPrefix(): string
+
   // chain set prefix
   setPrefix(value: string): this
 
-  // chain add attribute
-  addAttribute(name: string, value: unknown): this
+  // get attribute by name
+  getAttribute(name: string): unknown
 
-  // chain remove attribute
-  removeAttribute(name: string): this
+  // chain add attribute
+  // property will be delete when value is null or undefined
+  setAttribute(name: string, value: unknown): this
 
   // chain add child node
   addChild(childNode: XmlNode): void
