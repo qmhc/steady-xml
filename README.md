@@ -53,7 +53,8 @@ const rootNode = new XmlNode(XmlNodeType.Root)
 
 rootNode.toXmlString()
 rootNode.toXmlString('\t', '\n')
-rootNode.toXmlString('', '')`${rootNode}`
+rootNode.toXmlString('', '')
+`${rootNode}`
 ```
 
 JSON to `XmlNode`：
@@ -78,86 +79,6 @@ JSON.stringify(rootNode)
 ## Props
 
 ```ts
-type TextValue = string | number | boolean | null
-
-function parseXmlString(xmlString: string, props?: Partial<ParseProps>): XmlNode
-
-interface ParseProps {
-  // ignore parse node attributes
-  // default: false
-  ignoreAttributes: boolean
-
-  // should parse node value
-  // default: true
-  parseNodeValue: boolean
-
-  // should trim string values
-  // default: true
-  trimValues: boolean
-
-  // parse node value method
-  // default: v => v
-  valueProcessor: (value: string, type: XmlNodeType, name: string) => TextValue
-
-  // parse attribute values method
-  // default: v => v
-  attributeProcessor: (value: string, name: string, type: XmlNodeType) => TextValue
-}
-
-function buildFromJson<T extends Record<string, any>>(json: T, props?: Partial<BuildProps>): XmlNode
-
-interface BuildProps {
-  // name property key
-  // default: 'name'
-  nameKey: string
-
-  // type property key
-  // default: 'type'
-  typeKey: string
-
-  // value property key
-  // default: 'value'
-  valueKey: string
-
-  // attributes property key
-  // default: 'attributes'
-  attributesKey: string | false
-
-  // children property key
-  // default: 'children'
-  childrenKey: string
-
-  // self closing property key
-  // default: 'selfClosing'
-  selfClosingKey: string | false
-
-  // prefix property key
-  // default: 'prefix'
-  prefixKey: string | false
-
-  // should trim string values
-  // default: true
-  trimValues: boolean
-
-  // explicitly specify whether the json is a root node
-  // if be specified false, will judge according type
-  // if is not a root node, it will as element root node
-  // default: false
-  isRoot: boolean
-
-  // whether name includes prefix
-  // default: false
-  prefixInName: boolean
-
-  // parse node value method
-  // default: v => v
-  valueProcessor: (value: TextValue, type: XmlNodeType, name: string) => TextValue
-
-  // parse attribute values method
-  // default: v => v
-  attributeProcessor: (value: TextValue, name: string, type: XmlNodeType) => TextValue
-}
-
 enum XmlNodeType {
   // is not a real XML node type, only use as the XML data entry
   Root = 'Root',
@@ -194,7 +115,7 @@ interface XmlJsObject {
   children?: XmlJsObject[]
 }
 
-declare class XmlNode {
+class XmlNode {
   // node name
   protected name: string
 
@@ -279,6 +200,94 @@ declare class XmlNode {
 
   // generate xml string data
   toXmlString(indentChar?: string, newLine?: string, indentCount?: number): string
+}
+
+type TextValue = string | number | boolean | null
+
+function parseXmlString(xmlString: string, props?: Partial<ParseProps>): XmlNode
+
+interface ParseProps {
+  // a class whick extends XmlNode
+  // default: XmlNode
+  xmlClass: typeof XmlNode
+
+  // ignore parse node attributes
+  // default: false
+  ignoreAttributes: boolean
+
+  // should parse node value
+  // default: true
+  parseNodeValue: boolean
+
+  // should trim string values
+  // default: true
+  trimValues: boolean
+
+  // parse node value method
+  // default: v => v
+  valueProcessor: (value: string, type: XmlNodeType, name: string) => TextValue
+
+  // parse attribute values method
+  // default: v => v
+  attributeProcessor: (value: string, name: string, type: XmlNodeType) => TextValue
+}
+
+function buildFromJson<T extends Record<string, any>>(json: T, props?: Partial<BuildProps>): XmlNode
+
+interface BuildProps {
+  // a class whick extends XmlNode
+  // default: XmlNode
+  xmlClass: typeof XmlNode
+
+  // name property key
+  // default: 'name'
+  nameKey: string
+
+  // type property key
+  // default: 'type'
+  typeKey: string
+
+  // value property key
+  // default: 'value'
+  valueKey: string
+
+  // attributes property key
+  // default: 'attributes'
+  attributesKey: string | false
+
+  // children property key
+  // default: 'children'
+  childrenKey: string
+
+  // self closing property key
+  // default: 'selfClosing'
+  selfClosingKey: string | false
+
+  // prefix property key
+  // default: 'prefix'
+  prefixKey: string | false
+
+  // should trim string values
+  // default: true
+  trimValues: boolean
+
+  // explicitly specify whether the json is a root node
+  // if be specified false, will judge according type
+  // if is not a root node, it will as element root node
+  // default: false
+  isRoot: boolean
+
+  // whether name includes prefix
+  // default: false
+  prefixInName: boolean
+
+  // parse node value method
+  // default: v => v
+  valueProcessor: (value: TextValue, type: XmlNodeType, name: string) => TextValue
+
+  // parse attribute values method
+  // default: v => v
+  attributeProcessor: (value: TextValue, name: string, type: XmlNodeType) => TextValue
 }
 ```
 

@@ -1,7 +1,8 @@
 import { isArray, isNull, isObject, isString } from './shared'
-import { XmlNodeType, XmlNode } from './node'
+import { XmlNodeType } from './node'
 import { normalizeBuildProps } from './props'
 
+import type { XmlNode } from './node'
 import type { TextValue, BuildProps } from './props'
 
 interface LoopItem<T> {
@@ -16,6 +17,8 @@ export function buildFromJson<T extends Record<string, any>>(
   const normalizedProps = normalizeBuildProps(props)
   const { nameKey, typeKey, valueKey, attributesKey, childrenKey, selfClosingKey, prefixKey } =
     normalizedProps
+
+  const XmlNode = normalizedProps.nodeClass
 
   const rootXmlNode = new XmlNode(XmlNodeType.Root)
 

@@ -1,3 +1,4 @@
+import { XmlNode } from './node'
 import { isNull } from './shared'
 
 import type { XmlNodeType } from './node'
@@ -5,6 +6,7 @@ import type { XmlNodeType } from './node'
 export type TextValue = string | number | boolean | null
 
 export interface ParseProps {
+  nodeClass: typeof XmlNode,
   ignoreAttributes: boolean,
   parseNodeValue: boolean,
   trimValues: boolean,
@@ -14,6 +16,7 @@ export interface ParseProps {
 }
 
 export interface BuildProps {
+  nodeClass: typeof XmlNode,
   nameKey: string,
   typeKey: string,
   valueKey: string,
@@ -31,6 +34,7 @@ export interface BuildProps {
 const defaultProcessor = (v: any) => v
 
 export const defaultParseProps: ParseProps = {
+  nodeClass: XmlNode,
   ignoreAttributes: false,
   parseNodeValue: true,
   trimValues: true,
@@ -40,6 +44,7 @@ export const defaultParseProps: ParseProps = {
 }
 
 export const defaultBuildProps: BuildProps = {
+  nodeClass: XmlNode,
   nameKey: 'name',
   typeKey: 'type',
   valueKey: 'value',

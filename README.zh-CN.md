@@ -53,7 +53,8 @@ const rootNode = new XmlNode(XmlNodeType.Root)
 
 rootNode.toXmlString()
 rootNode.toXmlString('\t', '\n')
-rootNode.toXmlString('', '')`${rootNode}`
+rootNode.toXmlString('', '')
+`${rootNode}`
 ```
 
 JSON 转为 `XmlNode`：
@@ -78,86 +79,6 @@ JSON.stringify(rootNode)
 ## 属性
 
 ```ts
-type TextValue = string | number | boolean | null
-
-function parseXmlString(xmlString: string, props?: Partial<ParseProps>): XmlNode
-
-interface ParseProps {
-  // 是否忽略属性解析
-  // 默认值: false
-  ignoreAttributes: boolean
-
-  // 是否进行节点值解析
-  // 默认值: true
-  parseNodeValue: boolean
-
-  // 是否抹除字符值两边的空格
-  // 默认值: true
-  trimValues: boolean
-
-  // 节点值解析方法
-  // 默认值: v => v
-  valueProcessor: (value: string, type: XmlNodeType, name: string) => TextValue
-
-  // 属性值解析方法
-  // 默认值: v => v
-  attributeProcessor: (value: string, name: string, type: XmlNodeType) => TextValue
-}
-
-function buildFromJson<T extends Record<string, any>>(json: T, props?: Partial<BuildProps>): XmlNode
-
-interface BuildProps {
-  // 节点名称的键值
-  // 默认值: 'name'
-  nameKey: string
-
-  // 节点类型的键值
-  // 默认值: 'type'
-  typeKey: string
-
-  // 节点值的键值
-  // 默认值: 'value'
-  valueKey: string
-
-  // 节点属性的键值
-  // 默认值: 'attributes'
-  attributesKey: string | false
-
-  // 节点子子节点的键值
-  // 默认值: 'children'
-  childrenKey: string
-
-  // 节点自关闭的键值
-  // 默认值: 'selfClosing'
-  selfClosingKey: string | false
-
-  // 节点前缀的键值
-  // 默认值: 'prefix'
-  prefixKey: string | false
-
-  // 是否抹除字符值两边的空格
-  // 默认值: true
-  trimValues: boolean
-
-  // 显式地指定传入的数据是否为根节点
-  // 若为 false 时会根据 type 来判断是否为根节点
-  // 若第一个 json 不为根节点，则会被作为根 element 节点
-  // 默认值: false
-  isRoot: boolean
-
-  // 设置前缀是否包含在名称中
-  // 默认值: false
-  prefixInName: boolean
-
-  // 节点值解析方法
-  // 默认值: v => v
-  valueProcessor: (value: TextValue, type: XmlNodeType, name: string) => TextValue
-
-  // 属性值解析方法
-  // 默认值: v => v
-  attributeProcessor: (value: TextValue, name: string, type: XmlNodeType) => TextValue
-}
-
 enum XmlNodeType {
   // 该类型并不是真实的 XML 类型，仅用来作为 XML 数据入口
   Root = 'Root'
@@ -280,6 +201,94 @@ class XmlNode {
 
   // 生成 XML 数据
   toXmlString(indentChar?: string, newLine?: string, indentCount?: number): string
+}
+
+type TextValue = string | number | boolean | null
+
+function parseXmlString(xmlString: string, props?: Partial<ParseProps>): XmlNode
+
+interface ParseProps {
+  // 一个继承至 XmlNode 的类
+  // 默认值: XmlNode
+  xmlClass: typeof XmlNode
+
+  // 是否忽略属性解析
+  // 默认值: false
+  ignoreAttributes: boolean
+
+  // 是否进行节点值解析
+  // 默认值: true
+  parseNodeValue: boolean
+
+  // 是否抹除字符值两边的空格
+  // 默认值: true
+  trimValues: boolean
+
+  // 节点值解析方法
+  // 默认值: v => v
+  valueProcessor: (value: string, type: XmlNodeType, name: string) => TextValue
+
+  // 属性值解析方法
+  // 默认值: v => v
+  attributeProcessor: (value: string, name: string, type: XmlNodeType) => TextValue
+}
+
+function buildFromJson<T extends Record<string, any>>(json: T, props?: Partial<BuildProps>): XmlNode
+
+interface BuildProps {
+  // 一个继承至 XmlNode 的类
+  // 默认值: XmlNode
+  xmlClass: typeof XmlNode
+
+  // 节点名称的键值
+  // 默认值: 'name'
+  nameKey: string
+
+  // 节点类型的键值
+  // 默认值: 'type'
+  typeKey: string
+
+  // 节点值的键值
+  // 默认值: 'value'
+  valueKey: string
+
+  // 节点属性的键值
+  // 默认值: 'attributes'
+  attributesKey: string | false
+
+  // 节点子子节点的键值
+  // 默认值: 'children'
+  childrenKey: string
+
+  // 节点自关闭的键值
+  // 默认值: 'selfClosing'
+  selfClosingKey: string | false
+
+  // 节点前缀的键值
+  // 默认值: 'prefix'
+  prefixKey: string | false
+
+  // 是否抹除字符值两边的空格
+  // 默认值: true
+  trimValues: boolean
+
+  // 显式地指定传入的数据是否为根节点
+  // 若为 false 时会根据 type 来判断是否为根节点
+  // 若第一个 json 不为根节点，则会被作为根 element 节点
+  // 默认值: false
+  isRoot: boolean
+
+  // 设置前缀是否包含在名称中
+  // 默认值: false
+  prefixInName: boolean
+
+  // 节点值解析方法
+  // 默认值: v => v
+  valueProcessor: (value: TextValue, type: XmlNodeType, name: string) => TextValue
+
+  // 属性值解析方法
+  // 默认值: v => v
+  attributeProcessor: (value: TextValue, name: string, type: XmlNodeType) => TextValue
 }
 ```
 

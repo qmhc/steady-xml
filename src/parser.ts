@@ -1,5 +1,5 @@
 import { isNull, isString } from './shared'
-import { XmlNodeType, XmlNode } from './node'
+import { XmlNodeType } from './node'
 import { normalizeParseProps } from './props'
 
 import type { TextValue, ParseProps } from './props'
@@ -10,6 +10,8 @@ export function parseXmlString(xmlString: string, props: Partial<ParseProps> = {
   const normalizedXml = xmlString.replace(/\r\n?/g, '\n')
   const normalizedProps = normalizeParseProps(props)
   const xmlLength = normalizedXml.length
+
+  const XmlNode = normalizedProps.nodeClass
 
   const rootXmlNode = new XmlNode(XmlNodeType.Root)
 
